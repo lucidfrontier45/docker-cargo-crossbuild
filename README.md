@@ -1,4 +1,4 @@
-# docker-cargo-zigbuild
+# docker-cargo-crossbuild
 Dockerfile to setup cargo cross-compilation environment
 
 - `Dockerfile`: use cross compilation tools in the Debian's repository
