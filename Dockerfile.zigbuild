@@ -44,7 +44,9 @@ WORKDIR /usr/src/builder
 
 
 FROM debian:trixie-slim AS runner
-COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
+
+# if you intend to deploy on AWS Lambda, add Lambda Web Adapter
+# COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
 
 # Copy the built binary from the builder stage
 #COPY --from=builder /bin/app /usr/local/bin/app
