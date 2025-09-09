@@ -1,6 +1,6 @@
 ARG RUST_VERSION=1.89-trixie
 
-FROM debian:stable-slim AS internal-getter
+FROM --platform=$BUILDPLATFORM debian:stable-slim AS internal-getter
 WORKDIR /var/task
 
 RUN apt-get update && apt-get install -y curl xz-utils gzip
@@ -21,10 +21,8 @@ RUN ARCH=$(uname -m) && \
     tar xf ${FILE_NAME} && \
     mv cargo-zigbuild /opt/cargo-zigbuild
 
-FROM rust:${RUST_VERSION} AS builder
-WORKDIR /var/task
+FROM --platform=$BUILDPLATFORM rust:${RUST_VERSION} AS builder_base
 
 COPY --from=internal-getter /opt/zig /opt/zig
 COPY --from=internal-getter /opt/cargo-zigbuild /usr/local/bin/cargo-zigbuild
-
 ENV PATH="/opt/zig:${PATH}"
