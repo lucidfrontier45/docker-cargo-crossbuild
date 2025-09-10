@@ -36,20 +36,20 @@ RUN rustup target add \
 FROM --platform=$BUILDPLATFORM builder_base AS builder
 WORKDIR /usr/src/builder
 
-# build your own project
+# build your own project, change build process based on your need
 ARG TARGETARCH
 ARG FLAVOUR=musl
-# COPY . .
-# RUN ARCH=$(echo ${TARGETARCH} | sed -e 's/amd64/x86_64/' -e 's/arm64/aarch64/') && \
-#    cargo zigbuild --release --locked --target $ARCH-unknown-linux-$FLAVOUR && \
-#    cp target/$ARCH-unknown-linux-$FLAVOUR/release/app /bin/app
-
+COPY . .
+RUN ARCH=$(echo ${TARGETARCH} | sed -e 's/amd64/x86_64/' -e 's/arm64/aarch64/') && \
+    TARGET=${ARCH}-unknown-linux-${FLAVOUR} && \
+    cargo zigbuild --release --locked --target $TARGET && \
+    cp target/$TARGET/release/app /bin/app
 
 FROM debian:trixie-slim AS runner
 
 # if you intend to deploy on AWS Lambda, add Lambda Web Adapter
 # COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
 
-# Copy the built binary from the builder stage
-#COPY --from=builder /bin/app /usr/local/bin/app
-#CMD ["/usr/local/bin/app"]
+# Copy the built binary from the builder stage, adjust the executable name as needed
+COPY --from=builder /bin/app /usr/local/bin/app
+CMD ["/usr/local/bin/app"]
